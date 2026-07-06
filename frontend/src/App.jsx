@@ -1,4 +1,6 @@
 import { useState } from "react";
+import MicrophoneButton from "./components/MicrophoneButton";
+import { startSpeechRecognition } from "./services/speechService";
 
 function App() {
   const [text, setText] = useState("");
@@ -6,6 +8,18 @@ function App() {
 
   const [sourceLanguage, setSourceLanguage] = useState("kn");
   const [targetLanguage, setTargetLanguage] = useState("hi");
+
+  const startListening = () => {
+    startSpeechRecognition(
+      sourceLanguage,
+      (recognizedText) => {
+        setText(recognizedText);
+      },
+      (error) => {
+        alert("Speech recognition failed: " + error);
+      }
+    );
+  };
 
   const translateText = async () => {
     try {
@@ -98,16 +112,26 @@ function App() {
       <br />
       <br />
 
-      <button
-        onClick={translateText}
+      <div
         style={{
-          padding: "12px 25px",
-          fontSize: "18px",
-          cursor: "pointer",
+          display: "flex",
+          gap: "10px",
+          alignItems: "center",
         }}
       >
-        Translate
-      </button>
+        <button
+          onClick={translateText}
+          style={{
+            padding: "12px 25px",
+            fontSize: "18px",
+            cursor: "pointer",
+          }}
+        >
+          Translate
+        </button>
+
+        <MicrophoneButton onClick={startListening} />
+      </div>
 
       <br />
       <br />
