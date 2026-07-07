@@ -10,6 +10,7 @@ function App() {
 
   const [sourceLanguage, setSourceLanguage] = useState("kn");
   const [targetLanguage, setTargetLanguage] = useState("hi");
+  const [isListening, setIsListening] = useState(false);
 
   const handleTranslation = async (inputText) => {
     try {
@@ -31,17 +32,21 @@ function App() {
   };
 
   const startListening = () => {
-    startSpeechRecognition(
-      sourceLanguage,
-      async (recognizedText) => {
-        setText(recognizedText);
-        await handleTranslation(recognizedText);
-      },
-      (error) => {
-        alert("Speech recognition failed: " + error);
-      }
-    );
-  };
+  setIsListening(true);
+
+  startSpeechRecognition(
+    sourceLanguage,
+    async (recognizedText) => {
+      setText(recognizedText);
+      await handleTranslation(recognizedText);
+      setIsListening(false);
+    },
+    (error) => {
+      setIsListening(false);
+      alert("Speech recognition failed: " + error);
+    }
+  );
+};
 
   const handleTranslateClick = async () => {
     await handleTranslation(text);
@@ -134,7 +139,10 @@ function App() {
           Translate
         </button>
 
-        <MicrophoneButton onClick={startListening} />
+        <MicrophoneButton
+  onClick={startListening}
+  isListening={isListening}
+/>
       </div>
 
       <br />
