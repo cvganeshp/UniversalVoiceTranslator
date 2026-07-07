@@ -2,6 +2,7 @@ import { useState } from "react";
 import MicrophoneButton from "./components/MicrophoneButton";
 import { startSpeechRecognition } from "./services/speechService";
 import { translateText } from "./services/translationService";
+import { speakText } from "./utils/speechUtils";
 
 function App() {
   const [text, setText] = useState("");
@@ -19,6 +20,10 @@ function App() {
       );
 
       setTranslatedText(translated);
+
+      // 🔊 Speak the translated text
+      speakText(translated, targetLanguage);
+
     } catch (error) {
       alert("Unable to translate.");
       console.error(error);
