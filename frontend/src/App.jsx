@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MicrophoneButton from "./components/MicrophoneButton";
 import { startSpeechRecognition } from "./services/speechService";
+import { translateText } from "./services/translationService";
 
 function App() {
   const [text, setText] = useState("");
@@ -9,11 +10,27 @@ function App() {
   const [sourceLanguage, setSourceLanguage] = useState("kn");
   const [targetLanguage, setTargetLanguage] = useState("hi");
 
+  const handleTranslation = async (inputText) => {
+    try {
+      const translated = await translateText(
+        inputText,
+        sourceLanguage,
+        targetLanguage
+      );
+
+      setTranslatedText(translated);
+    } catch (error) {
+      alert("Unable to translate.");
+      console.error(error);
+    }
+  };
+
   const startListening = () => {
     startSpeechRecognition(
       sourceLanguage,
-      (recognizedText) => {
+      async (recognizedText) => {
         setText(recognizedText);
+        await handleTranslation(recognizedText);
       },
       (error) => {
         alert("Speech recognition failed: " + error);
@@ -21,26 +38,8 @@ function App() {
     );
   };
 
-  const translateText = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          sourceLanguage,
-          targetLanguage,
-        }),
-      });
-
-      const data = await response.json();
-      setTranslatedText(data.translatedText);
-    } catch (error) {
-      alert("Unable to connect to backend.");
-      console.error(error);
-    }
+  const handleTranslateClick = async () => {
+    await handleTranslation(text);
   };
 
   return (
@@ -120,7 +119,7 @@ function App() {
         }}
       >
         <button
-          onClick={translateText}
+          onClick={handleTranslateClick}
           style={{
             padding: "12px 25px",
             fontSize: "18px",
