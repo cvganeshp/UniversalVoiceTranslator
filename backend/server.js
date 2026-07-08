@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
-import { translate } from "@vitalets/google-translate-api";
+import axios from "axios";
+import dotenv from "dotenv";
+import { translateText } from "./services/translationService.js";
+
+dotenv.config();
+console.log("Gemini Key Loaded:", process.env.GEMINI_API_KEY ? "YES" : "NO");
 
 const app = express();
 
@@ -25,18 +30,19 @@ app.post("/translate", async (req, res) => {
       });
     }
 
-    const result = await translate(text, {
-      from: sourceLanguage,
-      to: targetLanguage,
-    });
+   const translatedText = await translateText(
+  text,
+  sourceLanguage,
+  targetLanguage
+);
 
-    res.json({
-      success: true,
-      originalText: text,
-      sourceLanguage,
-      targetLanguage,
-      translatedText: result.text,
-    });
+res.json({
+  success: true,
+  originalText: text,
+  sourceLanguage,
+  targetLanguage,
+  translatedText,
+});
   } catch (error) {
     console.error(error);
 
