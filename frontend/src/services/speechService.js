@@ -4,14 +4,22 @@ export function startSpeechRecognition(language, onSuccess, onError) {
     return;
   }
 
-  const recognition = new window.webkitSpeechRecognition();
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const recognition = new SpeechRecognition();
 
   recognition.lang = language;
   recognition.continuous = false;
   recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
   recognition.onresult = (event) => {
-    onSuccess(event.results[0][0].transcript);
+    const result = event.results[0][0];
+
+       
+ onSuccess(result.transcript);
+
   };
 
   recognition.onerror = (event) => {

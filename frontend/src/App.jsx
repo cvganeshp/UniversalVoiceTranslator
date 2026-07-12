@@ -13,25 +13,28 @@ function App() {
   const [isListening, setIsListening] = useState(false);
 
   const handleTranslation = async (inputText) => {
-    try {
-      const translated = await translateText(
-        inputText,
-        sourceLanguage,
-        targetLanguage
-      );
+  try {
+    const translated = await translateText(
+      inputText,
+      sourceLanguage,
+      targetLanguage
+    );
 
-      setTranslatedText(translated);
+    console.log("Translation completed:", translated);
 
-      // 🔊 Speak the translated text
-      speakText(translated, targetLanguage);
+    setTranslatedText(translated);
 
-    } catch (error) {
-      alert("Unable to translate.");
-      console.error(error);
-    }
-  };
+    console.log("Calling speakText...");
 
-  const startListening = () => {
+    await speakText(translated, targetLanguage);
+
+  } catch (error) {
+    console.error(error);
+    alert("Unable to translate.");
+  }
+};
+
+ const startListening = () => {
   setIsListening(true);
 
   startSpeechRecognition(

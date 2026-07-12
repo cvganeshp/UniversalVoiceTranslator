@@ -1,3 +1,4 @@
+import { speakText } from "./services/speechService.js";
 import express from "express";
 import cors from "cors";
 import axios from "axios";
@@ -53,7 +54,35 @@ res.json({
     });
   }
 });
+app.post("/speak", async (req, res) => {
+  try {
+    const { text, language } = req.body;
 
+    const voices = {
+      en: "en-US-JennyNeural",
+      hi: "hi-IN-SwaraNeural",
+      kn: "kn-IN-SapnaNeural",
+      ta: "ta-IN-PallaviNeural",
+      te: "te-IN-ShrutiNeural",
+      ml: "ml-IN-SobhanaNeural",
+    };
+
+    const audio = await speakText(
+      text,
+      voices[language] || "en-US-JennyNeural"
+    );
+
+    res.setHeader("Content-Type", "audio/wav");
+    res.send(Buffer.from(audio));
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Speech synthesis failed",
+    });
+  }
+});
 const PORT = 3000;
 
 app.listen(PORT, () => {
